@@ -4,7 +4,7 @@ import fs from 'fs';
 
 const eventEmitterDefault = new EventEmitterDefault();
 const parentPath = '/tmp/';
-const sockExtenstion = '.sock';
+const sockExtension = '.sock';
 
 class EventEmitter {
     constructor(role, channel) {
@@ -26,7 +26,7 @@ class EventEmitter {
     serverRoutine(path) {
 	fs.stat(path, (err, stats) => {
 	    if (err) {
-		this.createServer().listen(path);
+		this.createServer(path).listen(path);
 		return;
 	    }
 	    fs.unlink(path, err => {
@@ -34,32 +34,40 @@ class EventEmitter {
 		    console.error(err);
 		    process.exit(0);
 		}
-		this.createServer().listen(path);
+		this.createServer(path).listen(path);
 		return;
 	    });
 	});
     }
 
-    createServer() {
+    createServer(path) {
 	this.server = net.createServer(client => {
 	    this.serverClient = client;
 	    this.handleServerClient(client);
 	});
-	this.handleServer(this.server);
+	this.handleServer(this.server, path);
 	return this.server;
     }
 
-    handleServer(server) {
-	server.on('connect', () => console.log('connected'));
+    handleServer(server, path) {
+	// server.on('connect', () => console.log('connected'));
+	server.on('error', error => {
+	    if (error.code === 'EADDRINUSE') {
+		setTimeout(() => {
+		    server.close();
+		    server.listen(path);
+		}, 1000);
+	    }
+	});
     }
 
     handleServerClient(client) {
-	client.on('data', data => console.log(data.toString()));
+	// client.on('data', data => console.log(data.toString()));
     }
 
     emit(event, payload) {
 	try {
-	this.emitData = { event, payload };
+	    this.emitData = { event, payload };
 	    this.serverClient.write(JSON.stringify(this.emitData));
 	} catch (e) {
 	    console.error(e);
@@ -82,18 +90,35 @@ class EventEmitter {
 	} catch (e) {
 	    console.error('exception: ', e);
 	}
-	this.handleClient(this.client);
+	this.handleClient(this.client, path);
 	return this.client;
     }
 
-    handleClient(client) {
+    handleClient(client, path) {
 	client.on('data', data => {
 	    try {
 		this.clientEvent = JSON.parse(data.toString());
-		eventEmitterDefault.emit(this.clientEvent.event, this.clientEvent.payload.toString());
+		if (/^[\],:{}\s]*$/
+		    .test(this.clientEvent.payload
+			  .replace(/\\["\\\/bfnrtu]/g, '@')
+			  .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
+			  .replace(/(?:^|:|,)(?:\s*\[)+/g, ''))
+		   ) {
+		    eventEmitterDefault.emit(this.clientEvent.event, JSON.stringify(this.clientEvent.payload));
+		} else {
+		    eventEmitterDefault.emit(this.clientEvent.event, this.clientEvent.payload.toString());
+		}
 	    } catch (e) {
 		console.error(e);
 	    }
+	});
+	
+	client.on('error', error => {
+	    setTimeout(() => this.createClient(path), 1000);
+	});
+
+	client.on('end', () => {
+	    setTimeout(() => this.createClient(path), 1000);
 	});
     }
 

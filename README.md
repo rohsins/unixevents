@@ -1,4 +1,6 @@
 import { EventEmitter } from 'unixevents';
+or
+const EventEmitter = require('unixevents').EventEmitter;
 
 // EventEmitter(role, channel);
 
