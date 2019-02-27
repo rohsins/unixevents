@@ -99,7 +99,7 @@ class EventEmitter {
 	    try {
 		this.clientEvent = JSON.parse(data.toString());
 		if (/^[\],:{}\s]*$/
-		    .test(this.clientEvent.payload
+		    .test(this.clientEvent.payload.toString()
 			  .replace(/\\["\\\/bfnrtu]/g, '@')
 			  .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
 			  .replace(/(?:^|:|,)(?:\s*\[)+/g, ''))
