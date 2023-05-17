@@ -1,14 +1,22 @@
-import { EventEmitter } from 'unixevents';
+import { Linker } from 'unixevents';
 or
-const EventEmitter = require('unixevents').EventEmitter;
+const Linker = require('unixevents').Linker;
 
-// EventEmitter(role, channel);
+// Linker(role, channel);
 
-const emitter = new EventEmitter('server', 'rickshaw');
-const listener = new EventEmitter('client', 'rickshaw');
+const server = new Linker('server', 'rickshaw');
+const client = new Linker('client', 'rickshaw');
 
-listener.on('connecto', data => {
-	console.log('data: ', data);
+server.receive('event-a', data => {
+	console.log('Message on server: ', data);
 });
 
-emitter.emit('connecto', () => 'cool stuff');
+client.receive('event-a', data => {
+	cosole.log('Message on client: ', data)
+})
+
+client.send('event-a', () => 'cool stuff');
+server.send('event-a', () => 'cool stuff');
+
+server.close();
+client.close();
