@@ -68,19 +68,6 @@ class Linker extends EventEmitter {
 		await this.createServer(path);
     }
 
-    send(event, payload) {
-		event = this.role === 'server' ? 's-' + event : 'c-' + event;
-		payload = typeof(payload) === 'object' ? JSON.stringify(payload) : payload;
-		this.emitData = JSON.stringify({ event, payload });
-
-		this.handle = this.role === 'server' ? this.serverClient : this.client;
-
-		if (this.handle) this.handle.write(this.emitData + ';;');
-		else console.error("Handle is null: ", this.handle);
-    }
-
-
-
 /**************************************************server**************************************************/
 
 /**************************************************client**************************************************/
@@ -118,7 +105,9 @@ class Linker extends EventEmitter {
 		});
     }
 
-    receive(event, func) {
+/**************************************************client**************************************************/
+
+	receive(event, func) {
 		switch (this.role) {
 			case 'server':
 				eventEmitter.on('c-' + event, func);
@@ -127,9 +116,18 @@ class Linker extends EventEmitter {
 				eventEmitter.on('s-' + event, func);
 				break;
 		}
-    }
+	}
 
-/**************************************************client**************************************************/
+	send(event, payload) {
+		event = this.role === 'server' ? 's-' + event : 'c-' + event;
+		payload = typeof(payload) === 'object' ? JSON.stringify(payload) : payload;
+		this.emitData = JSON.stringify({ event, payload });
+
+		this.handle = this.role === 'server' ? this.serverClient : this.client;
+
+		if (this.handle) this.handle.write(this.emitData + ';;');
+		else console.error("Handle is null: ", this.handle);
+	}
 
 	close() {
 		switch (this.role) {
@@ -143,7 +141,6 @@ class Linker extends EventEmitter {
 				break;
 		}
 	}
-
 }
 
 export { Linker };

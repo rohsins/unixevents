@@ -13,16 +13,14 @@ describe('Testing linker events', async () => {
             console.log("Message on MqttService: ", data);
         });
 
-        mqttService.send('hardware', "hello");
-        mqttService.send('hardware', "world");
-        updateService.send('hardware', "what");
-        updateService.send('hardware', 'is this thing');
+        mqttService.send('hardware', "hello from mqtt service");
+        updateService.send('hardware', "hello from update service");
     });
 
-    setTimeout(() => {
-        it ('closing connection', async () => {
+    it ('closing connection', async () => {
+        setTimeout(() => {
             mqttService.close();
             updateService.close();
-        });
-    }, 2000);
+        }, 2000);
+    });
 });
