@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "nodemon --exec babel-node src/index.js",
-    "test": "nodemon --exec mocha ./_test_/test.spec.js",
+    "test": "mocha --exit ./_test_/test.spec.js",
     "build": "babel ./src/ -d cjs/"
   }
 }
