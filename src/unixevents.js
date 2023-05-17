@@ -21,10 +21,10 @@ class Linker extends EventEmitter {
 		switch (this.role) {
 			case 'server':
 				fs.unlink(parentPath + this.channel + sockExtension, () => {});
-				await this.producerRoutine(parentPath + this.channel + sockExtension);
+				await this.serverRoutine(parentPath + this.channel + sockExtension);
 				break;
 			case 'client':
-				await this.consumerRoutine(parentPath + this.channel + sockExtension);
+				await this.clientRoutine(parentPath + this.channel + sockExtension);
 				break;
 			default:
 				throw new Error('Error: no role specified');
@@ -64,7 +64,7 @@ class Linker extends EventEmitter {
 		});
 	}
 
-    async producerRoutine (path) {
+    async serverRoutine (path) {
 		await this.createServer(path);
     }
 
@@ -81,7 +81,7 @@ class Linker extends EventEmitter {
 		})
 	}
 
-    async consumerRoutine (path) {
+    async clientRoutine (path) {
 		await this.createClientConnection(path);
 		
 		this.client.on('data', dataPacket => {
@@ -98,10 +98,18 @@ class Linker extends EventEmitter {
 		
 		this.client.on('error', error => {
 			console.error(error);
+
+			setTimeout(async () => {
+				await this.client.connect(path);
+			}, 1000)
 		});
 		
 		this.client.on('end', () => {
 			console.log("Client connection ended");
+
+			setTimeout(async () => {
+				await this.client.connect(path);
+			}, 1000)
 		});
     }
 

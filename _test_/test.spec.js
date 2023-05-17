@@ -18,9 +18,7 @@ describe('Testing linker events', async () => {
     });
 
     it ('closing connection', async () => {
-        setTimeout(() => {
-            mqttService.close();
-            updateService.close();
-        }, 2000);
+        mqttService.close();
+        updateService.close();
     });
 });
