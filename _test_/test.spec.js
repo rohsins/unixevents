@@ -1,32 +1,28 @@
 import { Linker } from '../src/unixevents';
 
 describe('Testing linker events', async () => {
-    let server = new Linker('server', 'channel1');
-    let client = new Linker('client', 'channel1');
-
+    let mqttService = new Linker('server', 'channel1');
+    let updateService = new Linker('client', 'channel1');
     
     it('testing unix connection', async () => {
-        // await server.init();
-        // await client.init();
-
-        client.receive('hardware', data => {
-            console.log("Message on client: ", data);
-        });
-        server.receive('hardware', data => {
-            console.log("Message on server: ", data);
+        updateService.receive('hardware', data => {
+            console.log("Message on UpdateService: ", data);
         });
 
-        server.send('hardware', "hello");
-        setTimeout(() => {
-            server.send('hardware', "world");
-            client.send('hardware', "what");
-        }, 10);
+        mqttService.receive('hardware', data => {
+            console.log("Message on MqttService: ", data);
+        });
+
+        mqttService.send('hardware', "hello");
+        mqttService.send('hardware', "world");
+        updateService.send('hardware', "what");
+        updateService.send('hardware', 'is this thing');
     });
 
     setTimeout(() => {
         it ('closing connection', async () => {
-            server.close();
-            client.close();
+            mqttService.close();
+            updateService.close();
         });
     }, 2000);
 });

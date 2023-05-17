@@ -38,10 +38,13 @@ class Linker extends EventEmitter {
 			this.server = net.createServer(client => {
 				this.serverClient = client;
 
-				this.serverClient.on('data', data => {
+				this.serverClient.on('data', dataPacket => {
 					try {
-						this.serverEvent = JSON.parse(data.toString());
-						eventEmitter.emit(this.serverEvent.event, this.serverEvent.payload.toString());
+						(this.dataArray = dataPacket.toString().split(';;')).splice(-1);
+						this.dataArray.forEach(data => {
+							this.serverEvent = JSON.parse(data.toString());
+							eventEmitter.emit(this.serverEvent.event, this.serverEvent.payload.toString());
+						});
 					} catch (e) {
 						console.error(e);
 					}
@@ -72,7 +75,7 @@ class Linker extends EventEmitter {
 
 		this.handle = this.role === 'server' ? this.serverClient : this.client;
 
-		if (this.handle) this.handle.write(this.emitData);
+		if (this.handle) this.handle.write(this.emitData + ';;');
 		else console.error("Handle is null: ", this.handle);
     }
 
@@ -94,10 +97,13 @@ class Linker extends EventEmitter {
     async consumerRoutine (path) {
 		await this.createClientConnection(path);
 		
-		this.client.on('data', data => {
+		this.client.on('data', dataPacket => {
 			try {
-				this.clientEvent = JSON.parse(data.toString());
-				eventEmitter.emit(this.clientEvent.event, this.clientEvent.payload.toString());
+				(this.dataArray = dataPacket.toString().split(';;')).splice(-1);
+				this.dataArray.forEach(data => {
+					this.clientEvent = JSON.parse(data.toString());
+					eventEmitter.emit(this.clientEvent.event, this.clientEvent.payload.toString());
+				});
 			} catch (e) {
 				console.error(e);
 			}
