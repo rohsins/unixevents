@@ -20,7 +20,6 @@ class Linker extends EventEmitter {
 		
 		switch (this.role) {
 			case 'server':
-				fs.unlink(parentPath + this.channel + sockExtension, () => {});
 				await this.serverRoutine(parentPath + this.channel + sockExtension);
 				break;
 			case 'client':
@@ -51,9 +50,11 @@ class Linker extends EventEmitter {
 				});
 			});
 			
-			this.server.on('error', error => {
+			this.server.on('error', async error => {
 				if (error.code === 'EADDRINUSE') {
-					reject(error);
+					fs.unlink(parentPath + this.channel + sockExtension, () => {});
+					await this.createServer(path);
+					// reject(error);
 				}
 			});
 
@@ -76,41 +77,47 @@ class Linker extends EventEmitter {
 		return new Promise((resolve, reject) => {
 			this.client = net.createConnection({ path }, (err) => {
 				if (err) reject(err);
+				// resolve(this.client);
+			});
+
+			this.client.on('connect', (err) => {
+				if (err) console.error(err);
+
 				resolve(this.client);
+			});
+
+			this.client.on('error', error => {
+				console.error(error);
+	
+				setTimeout(async () => {
+					this.client.connect(path);
+				}, 1000)
+			});
+			
+			this.client.on('end', () => {
+				console.log("Client connection ended");
+	
+				setTimeout(async () => {
+					this.client.connect(path);
+				}, 1000)
+			});
+
+			this.client.on('data', dataPacket => {
+				try {
+					(this.dataArray = dataPacket.toString().split(';;')).splice(-1);
+					this.dataArray.forEach(data => {
+						this.clientEvent = JSON.parse(data.toString());
+						eventEmitter.emit(this.clientEvent.event, this.clientEvent.payload.toString());
+					});
+				} catch (e) {
+					console.error(e);
+				}
 			});
 		})
 	}
 
     async clientRoutine (path) {
 		await this.createClientConnection(path);
-		
-		this.client.on('data', dataPacket => {
-			try {
-				(this.dataArray = dataPacket.toString().split(';;')).splice(-1);
-				this.dataArray.forEach(data => {
-					this.clientEvent = JSON.parse(data.toString());
-					eventEmitter.emit(this.clientEvent.event, this.clientEvent.payload.toString());
-				});
-			} catch (e) {
-				console.error(e);
-			}
-		});
-		
-		this.client.on('error', error => {
-			console.error(error);
-
-			setTimeout(async () => {
-				await this.client.connect(path);
-			}, 1000)
-		});
-		
-		this.client.on('end', () => {
-			console.log("Client connection ended");
-
-			setTimeout(async () => {
-				await this.client.connect(path);
-			}, 1000)
-		});
     }
 
 /**************************************************client**************************************************/
@@ -140,12 +147,16 @@ class Linker extends EventEmitter {
 	close() {
 		switch (this.role) {
 			case 'server':
-				this.server.removeAllListeners();
-				this.server.close();
+				if (this.server) {
+					this.server.removeAllListeners();
+					this.server.close();
+				}
 				break;
 			case 'client':
-				this.client.end();
-				this.client.destroy();
+				if (this.client) {
+					this.client.end();
+					this.client.destroy();
+				}
 				break;
 		}
 	}
