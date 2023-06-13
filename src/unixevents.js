@@ -17,7 +17,7 @@ class Linker extends EventEmitter {
 		this.role = role;
 		this.channel = channel;
 
-		console.log("initializing ", this.role);
+		// console.log("initializing ", this.role);
 		
 		switch (this.role) {
 			case 'server':
@@ -88,7 +88,7 @@ class Linker extends EventEmitter {
 			});
 
 			this.client.on('error', error => {
-				console.error(error);
+				// console.error(error);
 	
 				setTimeout(async () => {
 					this.client.connect(path);
