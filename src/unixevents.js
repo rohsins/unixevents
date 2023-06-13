@@ -163,4 +163,4 @@ class Linker extends EventEmitter {
 	}
 }
 
-export { Linker };
+export default Linker;

@@ -1,1 +1,3 @@
-import { EventEmitter } from './src/unixevents';
+import Linker from './src/unixevents';
+
+export default Linker;
