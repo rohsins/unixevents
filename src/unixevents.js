@@ -8,14 +8,15 @@ const sockExtension = '.sock';
 
 class Linker extends EventEmitter {
     constructor (role, channel) {
-		super(role, channel);
+		super();
+
+		if (role && channel) this.init(role, channel);
+    }
+
+	async init (role, channel) {
 		this.role = role;
 		this.channel = channel;
 
-		this.init();
-    }
-	
-	async init () {
 		console.log("initializing ", this.role);
 		
 		switch (this.role) {
