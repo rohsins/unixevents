@@ -20,11 +20,11 @@ class Linker extends EventEmitter {
 		
 		switch (this.role) {
 			case 'server':
-				await this.serverRoutine(parentPath + this.channel + sockExtension);
-				break;
+				return await this.serverRoutine(parentPath + this.channel + sockExtension);
+				// break;
 			case 'client':
-				await this.clientRoutine(parentPath + this.channel + sockExtension);
-				break;
+				return await this.clientRoutine(parentPath + this.channel + sockExtension);
+				// break;
 			default:
 				throw new Error('Error: no role specified');
 		}
@@ -66,7 +66,7 @@ class Linker extends EventEmitter {
 	}
 
     async serverRoutine (path) {
-		await this.createServer(path);
+		return await this.createServer(path).then(_ => true).catch(_ => false);
     }
 
 /**************************************************server**************************************************/
@@ -117,7 +117,7 @@ class Linker extends EventEmitter {
 	}
 
     async clientRoutine (path) {
-		await this.createClientConnection(path);
+		return await this.createClientConnection(path).then(_ => true).catch(_ => false);
     }
 
 /**************************************************client**************************************************/
