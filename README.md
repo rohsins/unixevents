@@ -1,11 +1,11 @@
-import { Linker } from 'unixevents';
+import Linker from 'unixevents';
 or
-const Linker = require('unixevents').Linker;
+const Linker = require('unixevents');
 
 // Linker(role, channel);
 
-const server = new Linker('server', 'rickshaw');
-const client = new Linker('client', 'rickshaw');
+const server = new Linker('server', 'R&D-Hardware');
+const client = new Linker('client', 'R&D-Hardware');
 
 server.receive('event-a', data => {
 	console.log('Message on server: ', data);
