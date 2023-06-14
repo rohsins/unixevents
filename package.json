@@ -25,9 +25,6 @@
     "babel-preset-import-export": "^1.0.2",
     "mocha": "^10.2.0"
   },
-  "dependencies": {
-    "lodash": "^4.17.21"
-  },
   "scripts": {
     "test": "mocha --exit ./_test_/test.spec.js",
     "build": "babel ./src/ -d cjs/ --out-file-extension .cjs"
