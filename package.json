@@ -2,6 +2,14 @@
   "name": "unixevents",
   "version": "1.0.0",
   "main": "index.js",
+  "exports": {
+    ".": {
+      "default": {
+        "require": "./cjs/index.cjs",
+        "default": "./index.js"
+      }
+    }
+  },
   "author": "Rohit Singh <rohsins@gmail.com>",
   "license": "MIT",
   "private": false,
@@ -22,7 +30,7 @@
   },
   "scripts": {
     "test": "mocha --exit ./_test_/test.spec.js",
-    "build": "babel ./src/ -d cjs/"
+    "build": "babel ./src/ -d cjs/ --out-file-extension .cjs"
   },
   "repository": {
     "type": "git",
