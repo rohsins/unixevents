@@ -1,4 +1,4 @@
-import Linker from '../';
+import Linker from 'unixevents';
 
 describe('Testing linker events', async () => {
     let mqttService = new Linker('server', 'channel1');
