@@ -3,7 +3,7 @@ import net from 'net';
 import fs from 'fs';
 
 const eventEmitter = new EventEmitter();
-const parentPath = '/tmp/';
+const parentPath = process.platform === "linux" ? '/tmp/' : ("\\\\.\\pipe\\" + process.env.TMP + "\\");
 const sockExtension = '.sock';
 
 class Linker extends EventEmitter {
@@ -53,7 +53,7 @@ class Linker extends EventEmitter {
 			
 			this.server.on('error', async error => {
 				if (error.code === 'EADDRINUSE') {
-					fs.unlink(parentPath + this.channel + sockExtension, () => {});
+					fs.unlink(path, () => {});
 					await this.createServer(path);
 					// reject(error);
 				}

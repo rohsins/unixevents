@@ -1,3 +1,10 @@
+# `unixevents`
+
+Unixevents is a JavaScript library for communicating among programs in a machine.
+
+## Usage
+
+```js
 import Linker from 'unixevents';
 or
 const Linker = require('unixevents');
@@ -15,8 +22,9 @@ client.receive('event-a', data => {
 	cosole.log('Message on client: ', data)
 })
 
-client.send('event-a', () => 'cool stuff');
-server.send('event-a', () => 'cool stuff');
+client.send('event-a', () => 'mesg from client');
+server.send('event-a', () => 'mesg from server');
 
 server.close();
 client.close();
+```
