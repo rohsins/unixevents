@@ -83,7 +83,7 @@ var Linker = /*#__PURE__*/function (_EventEmitter) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               return _context3.abrupt("return", new Promise(function (resolve, reject) {
-                if (_fs["default"].existsSync) _fs["default"].unlinkSync(path, function () {});
+                if (_fs["default"].existsSync) _fs["default"].unlink(path, function () {});
                 _this2.server = _net["default"].createServer(function (client) {
                   _this2.serverClient = client;
                   _this2.serverClient.on('data', function (dataPacket) {
@@ -104,7 +104,7 @@ var Linker = /*#__PURE__*/function (_EventEmitter) {
                       while (1) switch (_context2.prev = _context2.next) {
                         case 0:
                           if (error.code === 'EADDRINUSE') {
-                            _fs["default"].unlinkSync(path, function () {});
+                            _fs["default"].unlink(path, function () {});
                             reject(error);
                           }
                         case 1:
