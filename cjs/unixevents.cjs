@@ -83,6 +83,7 @@ var Linker = /*#__PURE__*/function (_EventEmitter) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               return _context3.abrupt("return", new Promise(function (resolve, reject) {
+                if (_fs["default"].existsSync) _fs["default"].unlinkSync(path, function () {});
                 _this2.server = _net["default"].createServer(function (client) {
                   _this2.serverClient = client;
                   _this2.serverClient.on('data', function (dataPacket) {
@@ -102,14 +103,11 @@ var Linker = /*#__PURE__*/function (_EventEmitter) {
                     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
                       while (1) switch (_context2.prev = _context2.next) {
                         case 0:
-                          if (!(error.code === 'EADDRINUSE')) {
-                            _context2.next = 4;
-                            break;
+                          if (error.code === 'EADDRINUSE') {
+                            _fs["default"].unlinkSync(path, function () {});
+                            reject(error);
                           }
-                          _fs["default"].unlink(path, function () {});
-                          _context2.next = 4;
-                          return _this2.createServer(path);
-                        case 4:
+                        case 1:
                         case "end":
                           return _context2.stop();
                       }
@@ -141,18 +139,35 @@ var Linker = /*#__PURE__*/function (_EventEmitter) {
     key: "serverRoutine",
     value: function () {
       var _serverRoutine = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(path) {
+        var retry;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
-              _context4.next = 2;
+              retry = 10;
+            case 1:
+              _context4.next = 3;
               return this.createServer(path).then(function (_) {
                 return true;
               })["catch"](function (_) {
                 return false;
               });
-            case 2:
-              return _context4.abrupt("return", _context4.sent);
             case 3:
+              if (_context4.sent) {
+                _context4.next = 9;
+                break;
+              }
+              retry--;
+              if (retry) {
+                _context4.next = 7;
+                break;
+              }
+              return _context4.abrupt("return", false);
+            case 7:
+              _context4.next = 1;
+              break;
+            case 9:
+              return _context4.abrupt("return", true);
+            case 10:
             case "end":
               return _context4.stop();
           }

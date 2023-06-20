@@ -35,6 +35,8 @@ class Linker extends EventEmitter {
     
 	async createServer (path) {
 		return new Promise((resolve, reject) => {
+			if (fs.existsSync) fs.unlinkSync(path, () => {});
+
 			this.server = net.createServer(client => {
 				this.serverClient = client;
 
@@ -53,9 +55,8 @@ class Linker extends EventEmitter {
 			
 			this.server.on('error', async error => {
 				if (error.code === 'EADDRINUSE') {
-					fs.unlink(path, () => {});
-					await this.createServer(path);
-					// reject(error);
+					fs.unlinkSync(path, () => {});
+					reject(error);
 				}
 			});
 
@@ -67,7 +68,15 @@ class Linker extends EventEmitter {
 	}
 
     async serverRoutine (path) {
-		return await this.createServer(path).then(_ => true).catch(_ => false);
+		let retry = 10;
+
+		while (!await this.createServer(path).then(_ => true).catch(_ => false)) {
+			retry--;
+
+			if (!retry) return false;
+		}
+
+		return true;
     }
 
 /**************************************************server**************************************************/
