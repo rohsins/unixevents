@@ -47,9 +47,9 @@ const Linker = require('unixevents');
 const main = async () => {
     console.log("starting the program");
 
-	let result = false;
-	const server = new Linker();
-	const client = new Linker();
+    let result = false;
+    const server = new Linker();
+    const client = new Linker();
 
     result = await server.init('server', 'R&D-Hardware');
     console.log("server initialized: ", result);

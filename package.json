@@ -1,12 +1,16 @@
 {
   "name": "unixevents",
   "version": "1.1.2",
-  "main": "index.js",
+  "main": "unixevents.js",
   "exports": {
     ".": {
-      "default": {
-        "require": "./cjs/index.cjs",
-        "default": "./index.js"
+      "require": {
+        "types": "./dist/unixevents.d.ts",
+        "default": "./dist/unixevents.cjs"
+      },
+      "import": {
+        "types": "./dist/unixevents.d.ts",
+        "default": "./dist/unixevents.js"
       }
     }
   },
@@ -14,14 +18,14 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/preset-env": "^7.10.4",
-    "@babel/register": "^7.10.5",
-    "mocha": "^10.2.0"
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.3.3",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1"
   },
   "scripts": {
-    "test": "mocha --exit ./_test_/test.spec.js",
-    "build": "babel ./src/ -d cjs/ --out-file-extension .cjs"
+    "test": "mocha --exit ./_test_/test.spec.ts",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
