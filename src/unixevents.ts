@@ -191,8 +191,16 @@ class Linker extends EventEmitter {
 		}
 	}
 
-	removeReceiver = eventEmitter.removeListener;
-	removeAllReceiver = eventEmitter.removeAllListeners;
+	removeReceiver(event: string, func: any) {
+		switch (this.role) {
+			case 'server':
+				eventEmitter.off('c-' + event, func);
+				break;
+			case 'client':
+				eventEmitter.off('s-' + event, func);
+				break;
+		}
+	}
 
 	send(event: string, payload: object | string) {
 		event = this.role === 'server' ? 's-' + event : 'c-' + event;
