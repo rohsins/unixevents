@@ -26,6 +26,23 @@ class Linker extends EventEmitter {
 	};
 	emitData?: string;
 	handle?: net.Socket | undefined;
+	debug: Boolean = false;
+	
+	consoleLog (...args: any) {
+		if (this.debug) console.log(args);
+	}
+	
+	consoleError (...args: any) {
+		if (this.debug) console.error(args);
+	}
+
+	enableDebug () {
+		this.debug = true;
+	}
+
+	disableDebug () {
+		this.debug = false;
+	}
 
     constructor (role: Role, channel: Channel) {
 		super();
@@ -37,7 +54,7 @@ class Linker extends EventEmitter {
 		this.role = role;
 		this.channel = channel;
 
-		// console.log("initializing ", this.role);
+		// this.consoleLog("initializing ", this.role);
 		
 		switch (this.role) {
 			case 'server':
@@ -52,7 +69,7 @@ class Linker extends EventEmitter {
 	}
 
 /**************************************************server**************************************************/
-    
+
 	async createServer (path: string) {
 		return new Promise((resolve, reject) => {
 			if (fs.existsSync(path)) fs.unlink(path, () => {});
@@ -68,7 +85,7 @@ class Linker extends EventEmitter {
 							eventEmitter.emit(this.serverEvent!.event, this.serverEvent!.payload.toString());
 						});
 					} catch (e) {
-						console.error(e);
+						this.consoleError(e);
 					}
 				});
 			});
@@ -111,13 +128,13 @@ class Linker extends EventEmitter {
 			});
 
 			this.client.on('connect', (err: Error) => {
-				if (err) console.error(err);
+				if (err) this.consoleError(err);
 
 				resolve(this.client);
 			});
 
 			this.client.on('error', _error => {
-				console.error(_error);
+				this.consoleError(_error);
 	
 				setTimeout(async () => {
 					this.client!.connect(path);
@@ -125,7 +142,7 @@ class Linker extends EventEmitter {
 			});
 			
 			this.client.on('end', () => {
-				console.log("Client connection ended");
+				this.consoleLog("Client connection ended");
 	
 				setTimeout(async () => {
 					this.client!.connect(path);
@@ -140,7 +157,7 @@ class Linker extends EventEmitter {
 						eventEmitter.emit(this.clientEvent!.event, this.clientEvent!.payload.toString());
 					});
 				} catch (e) {
-					console.error(e);
+					this.consoleError(e);
 				}
 			});
 		})
@@ -163,6 +180,20 @@ class Linker extends EventEmitter {
 		}
 	}
 
+	receiveOnce(event: string, func: any) {
+		switch (this.role) {
+			case 'server':
+				eventEmitter.once('c-' + event, func);
+				break;
+			case 'client':
+				eventEmitter.once('s-' + event, func);
+				break;
+		}
+	}
+
+	removeReceiver = eventEmitter.removeListener;
+	removeAllReceiver = eventEmitter.removeAllListeners;
+
 	send(event: string, payload: object | string) {
 		event = this.role === 'server' ? 's-' + event : 'c-' + event;
 		payload = typeof(payload) === 'object' ? JSON.stringify(payload) : payload;
@@ -171,7 +202,7 @@ class Linker extends EventEmitter {
 		this.handle = this.role === 'server' ? this.serverClient : this.client;
 
 		if (this.handle) this.handle.write(this.emitData + ';;');
-		else console.error("Handle is null: ", this.handle);
+		else this.consoleError("Handle is null: ", this.handle);
 	}
 
 	close() {
