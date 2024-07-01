@@ -1,5 +1,3 @@
-/// <reference types="node" />
-/// <reference types="node" />
 import { EventEmitter } from 'events';
 import net from 'net';
 type Role = "server" | "client";
@@ -21,6 +19,11 @@ declare class Linker extends EventEmitter {
     };
     emitData?: string;
     handle?: net.Socket | undefined;
+    debug: Boolean;
+    consoleLog(...args: any): void;
+    consoleError(...args: any): void;
+    enableDebug(): void;
+    disableDebug(): void;
     constructor(role: Role, channel: Channel);
     init(role: Role, channel: Channel): Promise<boolean>;
     createServer(path: string): Promise<unknown>;
@@ -28,6 +31,9 @@ declare class Linker extends EventEmitter {
     createClientConnection(path: string): Promise<unknown>;
     clientRoutine(path: string): Promise<boolean>;
     receive(event: string, func: any): void;
+    receiveOnce(event: string, func: any): void;
+    removeReceiver: <K>(eventName: string | symbol, listener: (...args: any[]) => void) => EventEmitter<[never]>;
+    removeAllReceiver: (eventName?: string | symbol | undefined) => EventEmitter<[never]>;
     send(event: string, payload: object | string): void;
     close(): void;
 }

@@ -19,8 +19,25 @@ const eventEmitter = new events_1.EventEmitter();
 const parentPath = process.platform === "linux" ? '/tmp/' : ("\\\\.\\pipe\\" + process.env['TMP'] + "\\");
 const sockExtension = '.sock';
 class Linker extends events_1.EventEmitter {
+    consoleLog(...args) {
+        if (this.debug)
+            console.log(args);
+    }
+    consoleError(...args) {
+        if (this.debug)
+            console.error(args);
+    }
+    enableDebug() {
+        this.debug = true;
+    }
+    disableDebug() {
+        this.debug = false;
+    }
     constructor(role, channel) {
         super();
+        this.debug = false;
+        this.removeReceiver = eventEmitter.removeListener;
+        this.removeAllReceiver = eventEmitter.removeAllListeners;
         if (role && channel)
             this.init(role, channel);
     }
@@ -54,7 +71,7 @@ class Linker extends events_1.EventEmitter {
                             });
                         }
                         catch (e) {
-                            console.error(e);
+                            this.consoleError(e);
                         }
                     });
                 });
@@ -88,17 +105,17 @@ class Linker extends events_1.EventEmitter {
                 });
                 this.client.on('connect', (err) => {
                     if (err)
-                        console.error(err);
+                        this.consoleError(err);
                     resolve(this.client);
                 });
                 this.client.on('error', _error => {
-                    console.error(_error);
+                    this.consoleError(_error);
                     setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                         this.client.connect(path);
                     }), 1000);
                 });
                 this.client.on('end', () => {
-                    console.log("Client connection ended");
+                    this.consoleLog("Client connection ended");
                     setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                         this.client.connect(path);
                     }), 1000);
@@ -112,7 +129,7 @@ class Linker extends events_1.EventEmitter {
                         });
                     }
                     catch (e) {
-                        console.error(e);
+                        this.consoleError(e);
                     }
                 });
             });
@@ -133,6 +150,16 @@ class Linker extends events_1.EventEmitter {
                 break;
         }
     }
+    receiveOnce(event, func) {
+        switch (this.role) {
+            case 'server':
+                eventEmitter.once('c-' + event, func);
+                break;
+            case 'client':
+                eventEmitter.once('s-' + event, func);
+                break;
+        }
+    }
     send(event, payload) {
         event = this.role === 'server' ? 's-' + event : 'c-' + event;
         payload = typeof (payload) === 'object' ? JSON.stringify(payload) : payload;
@@ -141,7 +168,7 @@ class Linker extends events_1.EventEmitter {
         if (this.handle)
             this.handle.write(this.emitData + ';;');
         else
-            console.error("Handle is null: ", this.handle);
+            this.consoleError("Handle is null: ", this.handle);
     }
     close() {
         switch (this.role) {
