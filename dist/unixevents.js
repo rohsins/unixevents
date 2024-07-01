@@ -36,8 +36,6 @@ class Linker extends events_1.EventEmitter {
     constructor(role, channel) {
         super();
         this.debug = false;
-        this.removeReceiver = eventEmitter.removeListener;
-        this.removeAllReceiver = eventEmitter.removeAllListeners;
         if (role && channel)
             this.init(role, channel);
     }
@@ -157,6 +155,16 @@ class Linker extends events_1.EventEmitter {
                 break;
             case 'client':
                 eventEmitter.once('s-' + event, func);
+                break;
+        }
+    }
+    removeReceiver(event, func) {
+        switch (this.role) {
+            case 'server':
+                eventEmitter.off('c-' + event, func);
+                break;
+            case 'client':
+                eventEmitter.off('s-' + event, func);
                 break;
         }
     }

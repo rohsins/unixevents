@@ -32,8 +32,7 @@ declare class Linker extends EventEmitter {
     clientRoutine(path: string): Promise<boolean>;
     receive(event: string, func: any): void;
     receiveOnce(event: string, func: any): void;
-    removeReceiver: <K>(eventName: string | symbol, listener: (...args: any[]) => void) => EventEmitter<[never]>;
-    removeAllReceiver: (eventName?: string | symbol | undefined) => EventEmitter<[never]>;
+    removeReceiver(event: string, func: any): void;
     send(event: string, payload: object | string): void;
     close(): void;
 }
