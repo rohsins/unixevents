@@ -213,6 +213,25 @@ class Linker extends EventEmitter {
 		else this.consoleError("Handle is null: ", this.handle);
 	}
 
+	sendSync(event: string, payload: object | string): Promise<Error | null | undefined> {
+	    return new Promise((resolve, reject) => {
+		    event = this.role === 'server' ? 's-' + event : 'c-' + event;
+		    payload = typeof(payload) === 'object' ? JSON.stringify(payload) : payload;
+		    this.emitData = JSON.stringify({ event, payload });
+
+		    this.handle = this.role === 'server' ? this.serverClient : this.client;
+
+		    if (this.handle) this.handle.write(this.emitData + ';;', err => {
+			if (err) return reject(err);
+			return resolve(err);
+		    });
+		    else {
+			this.consoleError("Handle is null: ", this.handle);
+			reject(this.handle);
+		    }
+	    });
+	}
+
 	close() {
 		switch (this.role) {
 			case 'server':

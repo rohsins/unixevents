@@ -133,7 +133,9 @@ main();
 - [`new Linker(role, channel)`](#new-linkerrole-channel)
 - [`init(role, channel)`](#initrole-channel)
 - [`receive(event, listener)`](#receiveevent-listener)
+- [`receiveOnce(event, listener)`](#receiveonceevent-listener)
 - [`send(event, data)`](#sendevent-data)
+- [`sendSync(event, data)`](#sendsyncevent-data)
 - [`close()`](#close)
 
 ---
@@ -157,8 +159,8 @@ Creates a new instance of Linker with initialization.
 
 If the object is instantiated with `new Linker(role, channel)` with arguments, then it does not need to invoke .init(role, channel) to initialized the object.
 
-- <role> can be either 'server' or 'client'.
-- <channel> placeholder for a channel.
+- role: can be either 'server' or 'client'.
+- channel: placeholder for a channel.
 
 ```js
     let router = new Linker('server', 'lcp');
@@ -170,8 +172,8 @@ If the object is instantiated with `new Linker(role, channel)` with arguments, t
 
 Initialize the object with the role and channel
 
-- <role> can be either 'server' or 'client'.
-- <channel> placeholder for a channel.
+- role: can be either 'server' or 'client'.
+- channel: placeholder for a channel.
 - Returns a promise. success: true, failure: false.
 
 ```js
@@ -196,6 +198,21 @@ Subscribes to the event
 
 ---
 
+### `receiveOnce(event, listener)`
+
+Subscribes to the event once, then automatically unsubscribes after receiving the first data.
+
+- event (required): The event to subscribe to.
+- listener (required): The event listener callback
+
+```js
+    router.receiveOnce('link-up', data => {
+        console.log(data);
+    });
+```
+
+---
+
 ### `send(event, data)`
 
 Invokes an event asynchronously, optionally with data.
@@ -205,6 +222,19 @@ Invokes an event asynchronously, optionally with data.
 
 ```js
     router.send('link-up', { status: "up" });
+```
+
+---
+
+### `sendSync(event, data)`
+
+Invokes an event synchronously, optionally with data.
+
+- event (required): The event to invoke.
+- data (required): The data to pass to the event listener. String or Object or Array
+
+```js
+    await router.sendSync('link-up', { status: "up" });
 ```
 
 ---
