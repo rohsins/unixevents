@@ -33,8 +33,8 @@ declare class Linker extends EventEmitter {
     receive(event: string, func: any): void;
     receiveOnce(event: string, func: any): void;
     removeReceiver(event: string, func: any): void;
-    send(event: string, payload: object | string): void;
-    sendSync(event: string, payload: object | string): Promise<Error | null | undefined>;
+    send(event: string, payload: object | string, callback: Function): void;
+    sendSync(event: string, payload: object | string): Promise<Error | null | undefined | boolean>;
     close(): void;
 }
 export default Linker;

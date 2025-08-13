@@ -134,7 +134,7 @@ main();
 - [`init(role, channel)`](#initrole-channel)
 - [`receive(event, listener)`](#receiveevent-listener)
 - [`receiveOnce(event, listener)`](#receiveonceevent-listener)
-- [`send(event, data)`](#sendevent-data)
+- [`send(event, data[, callback])`](#sendevent-data-callback)
 - [`sendSync(event, data)`](#sendsyncevent-data)
 - [`close()`](#close)
 
@@ -213,15 +213,19 @@ Subscribes to the event once, then automatically unsubscribes after receiving th
 
 ---
 
-### `send(event, data)`
+### `send(event, data[, callback])`
 
 Invokes an event asynchronously, optionally with data.
 
 - event (required): The event to invoke.
 - data (required): The data to pass to the event listener. String or Object or Array
+- callback (optional): The callback function will be executed when the data is finally written out, which may not be immediately.
 
 ```js
-    router.send('link-up', { status: "up" });
+    router.send('link-up', { status: "up" }, (error, success) => {
+        if (error) console.error(error);
+        else console.log(success);
+    });
 ```
 
 ---

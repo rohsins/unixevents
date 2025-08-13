@@ -16,7 +16,7 @@ const events_1 = require("events");
 const net_1 = __importDefault(require("net"));
 const fs_1 = __importDefault(require("fs"));
 const eventEmitter = new events_1.EventEmitter();
-const parentPath = process.platform === "linux" ? '/tmp/' : ("\\\\.\\pipe\\" + process.env['TMP'] + "\\");
+const parentPath = (process.platform === "linux" || process.platform === "darwin") ? '/tmp/' : ("\\\\.\\pipe\\" + process.env['TMP'] + "\\");
 const sockExtension = '.sock';
 class Linker extends events_1.EventEmitter {
     consoleLog(...args) {
@@ -168,15 +168,23 @@ class Linker extends events_1.EventEmitter {
                 break;
         }
     }
-    send(event, payload) {
+    send(event, payload, callback) {
         event = this.role === 'server' ? 's-' + event : 'c-' + event;
         payload = typeof (payload) === 'object' ? JSON.stringify(payload) : payload;
         this.emitData = JSON.stringify({ event, payload });
         this.handle = this.role === 'server' ? this.serverClient : this.client;
-        if (this.handle)
-            this.handle.write(this.emitData + ';;');
-        else
-            this.consoleError("Handle is null: ", this.handle);
+        if (this.handle) {
+            this.handle.write(this.emitData + ';;', err => {
+                if (err)
+                    callback(err);
+                else
+                    callback(null, true);
+            });
+        }
+        else {
+            this.consoleError("Socket handle is null: ", this.handle);
+            callback(new Error("Socket handle is null"));
+        }
     }
     sendSync(event, payload) {
         return new Promise((resolve, reject) => {
@@ -184,15 +192,16 @@ class Linker extends events_1.EventEmitter {
             payload = typeof (payload) === 'object' ? JSON.stringify(payload) : payload;
             this.emitData = JSON.stringify({ event, payload });
             this.handle = this.role === 'server' ? this.serverClient : this.client;
-            if (this.handle)
+            if (this.handle) {
                 this.handle.write(this.emitData + ';;', err => {
                     if (err)
                         return reject(err);
-                    return resolve(err);
+                    return resolve(true);
                 });
+            }
             else {
-                this.consoleError("Handle is null: ", this.handle);
-                reject(this.handle);
+                this.consoleError("Socket handle is null: ", this.handle);
+                return reject(new Error("Socket handle is null"));
             }
         });
     }
