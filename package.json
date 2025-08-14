@@ -1,38 +1,55 @@
 {
-  "name": "unixevents",
-  "version": "1.5.1",
-  "main": "unixevents.js",
-  "exports": {
-    ".": {
-      "require": {
-        "types": "./dist/unixevents.d.ts",
-        "default": "./dist/unixevents.cjs"
-      },
-      "import": {
-        "types": "./dist/unixevents.d.ts",
-        "default": "./dist/unixevents.js"
-      }
-    }
-  },
-  "author": "Rohit Singh <rohsins@gmail.com>",
-  "license": "MIT",
-  "private": false,
-  "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^20.19.10",
-    "mocha": "^10.8.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
-  },
-  "scripts": {
-    "test": "mocha --exit ./_test_/test.spec.ts",
-    "build": "tsc"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rohsins/unixevents.git"
-  },
-  "bugs": {
-    "url": "https://github.com/rohsins/unixevents/issues"
-  }
+    "name": "unixevents",
+    "version": "1.5.1",
+    "author": "Rohit Singh <rohsins@gmail.com>",
+    "license": "MIT",
+    "private": false,
+    "main": "./dist/unixevents.cjs",
+    "module": "./dist/unixevents.js",
+    "types": "./dist/unixevents.d.ts",
+    "exports": {
+	".": {
+	    "require": {
+		"types": "./dist/unixevents.d.ts",
+		"default": "./dist/unixevents.cjs"
+	    },
+	    "import": {
+		"types": "./dist/unixevents.d.ts",
+		"default": "./dist/unixevents.js"
+	    }
+	}
+    },
+    "files": [
+	"dist",
+	"README.md"
+    ],
+    "engines": {
+	"node": ">=10"
+    },
+    "devDependencies": {
+	"@types/mocha": "^10.0.10",
+	"@types/node": "^20.19.10",
+	"mocha": "^10.8.2",
+	"ts-node": "^10.9.2",
+	"typescript": "^5.9.2"
+    },
+    "scripts": {
+	"test": "mocha --exit ./_test_/test.spec.ts",
+	"build": "tsc"
+    },
+    "repository": {
+	"type": "git",
+	"url": "git+https://github.com/rohsins/unixevents.git"
+    },
+    "bugs": {
+	"url": "https://github.com/rohsins/unixevents/issues"
+    },
+    "description": "Unixevents is a JavaScript library for communicating among programs in a machine.",
+    "homepage": "https://github.com/rohsins/unixevents#readme",
+    "keywords": [
+	"unixevent",
+	"unixevents",
+	"exchange"
+    ]
 }
+

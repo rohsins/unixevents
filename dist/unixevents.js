@@ -175,15 +175,18 @@ class Linker extends events_1.EventEmitter {
         this.handle = this.role === 'server' ? this.serverClient : this.client;
         if (this.handle) {
             this.handle.write(this.emitData + ';;', err => {
-                if (err)
-                    callback(err);
-                else
-                    callback(null, true);
+                if (callback) {
+                    if (err)
+                        callback(err);
+                    else
+                        callback(null, true);
+                }
             });
         }
         else {
             this.consoleError("Socket handle is null: ", this.handle);
-            callback(new Error("Socket handle is null"));
+            if (callback)
+                callback(new Error("Socket handle is null"));
         }
     }
     sendSync(event, payload) {

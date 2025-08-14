@@ -202,7 +202,7 @@ class Linker extends EventEmitter {
 	}
     }
 
-    send(event: string, payload: object | string, callback: Function) {
+    send(event: string, payload: object | string, callback: Function | undefined) {
 	event = this.role === 'server' ? 's-' + event : 'c-' + event;
 	payload = typeof(payload) === 'object' ? JSON.stringify(payload) : payload;
 	this.emitData = JSON.stringify({ event, payload });
@@ -210,12 +210,14 @@ class Linker extends EventEmitter {
 
 	if (this.handle) {
 	    this.handle.write(this.emitData + ';;', err => {
-		if (err) callback(err);
-		else callback(null, true);
+		if (callback) {
+		    if (err) callback(err);
+		    else callback(null, true);
+		}
 	    });
 	} else {
 	    this.consoleError("Socket handle is null: ", this.handle);
-	    callback(new Error("Socket handle is null"));
+	    if (callback) callback(new Error("Socket handle is null"));
 	}
     }
 
