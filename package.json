@@ -1,6 +1,6 @@
 {
     "name": "unixevents",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "author": "Rohit Singh <rohsins@gmail.com>",
     "license": "MIT",
     "private": false,
@@ -8,48 +8,47 @@
     "module": "./dist/unixevents.js",
     "types": "./dist/unixevents.d.ts",
     "exports": {
-	".": {
-	    "require": {
-		"types": "./dist/unixevents.d.ts",
-		"default": "./dist/unixevents.cjs"
-	    },
-	    "import": {
-		"types": "./dist/unixevents.d.ts",
-		"default": "./dist/unixevents.js"
-	    }
-	}
+        ".": {
+            "require": {
+                "types": "./dist/unixevents.d.ts",
+                "default": "./dist/unixevents.cjs"
+            },
+            "import": {
+                "types": "./dist/unixevents.d.ts",
+                "default": "./dist/unixevents.js"
+            }
+        }
     },
     "files": [
-	"dist",
-	"README.md"
+        "dist",
+        "README.md"
     ],
     "engines": {
-	"node": ">=10"
+        "node": ">=10"
     },
     "devDependencies": {
-	"@types/mocha": "^10.0.10",
-	"@types/node": "^20.19.10",
-	"mocha": "^10.8.2",
-	"ts-node": "^10.9.2",
-	"typescript": "^5.9.2"
+        "@types/mocha": "^10.0.10",
+        "@types/node": "^20.19.10",
+        "mocha": "^10.8.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.2"
     },
     "scripts": {
-	"test": "mocha --exit ./_test_/test.spec.ts",
-	"build": "tsc"
+        "test": "mocha --exit ./_test_/test.spec.ts",
+        "build": "tsc"
     },
     "repository": {
-	"type": "git",
-	"url": "git+https://github.com/rohsins/unixevents.git"
+        "type": "git",
+        "url": "git+https://github.com/rohsins/unixevents.git"
     },
     "bugs": {
-	"url": "https://github.com/rohsins/unixevents/issues"
+        "url": "https://github.com/rohsins/unixevents/issues"
     },
     "description": "Unixevents is a JavaScript library for communicating among programs in a machine.",
     "homepage": "https://github.com/rohsins/unixevents#readme",
     "keywords": [
-	"unixevent",
-	"unixevents",
-	"exchange"
+        "unixevent",
+        "unixevents",
+        "exchange"
     ]
 }
-
